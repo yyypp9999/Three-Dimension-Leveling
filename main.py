@@ -5,6 +5,7 @@ from tkinter import filedialog
 import pandas as pd
 import numpy as np
 import xlrd
+import math
 
 # 创建tkinter窗口并隐藏
 root = tk.Tk()
@@ -57,6 +58,8 @@ d = 0-(a*x1+b*y1+c*z1)
 
 print("平面方程为：",a,"x+",b,"y+",c,"z+",d,"=0")
 
+cos_level = abs(c/math.sqrt(a**2+b**2+c**2))
+
 # 创建保存结果的文件夹
 result_folder = os.path.dirname('D:') + os.sep + '平面校准'
 
@@ -105,15 +108,10 @@ for measurelev_file in measurelev_files:
         z = data.iloc[i,2]
         m = -(d+a*x+b*y)/c
         z_delta.append(m)
-        n = m-z
+        n = (m-z)/cos_level
         z_calibrated.append(n)
 
     # 将处理后的data以xlsx保存到结果文件夹中
     result_file = os.path.join(result_folder, os.path.basename(measurelev_file))
-    pd.DataFrame({'X': col1, 'Y': col2, 'Z': col3, '理论平面Z值': z_delta, '校准后的Z值': z_calibrated}).to_excel(result_file, index=False)
+    pd.DataFrame({'X': col1, 'Y': col2, 'Z': col3, '基准平面理论Z值': z_delta, '校准后的Z值': z_calibrated}).to_excel(result_file, index=False)
     print(f"{measurelev_file} 处理完成，并保存到 {result_file} 中。")    
-
-
-
-
-
